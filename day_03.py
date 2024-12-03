@@ -16,12 +16,11 @@ def part2(input):
     matches = re.findall(pattern, input)
     enabled = True
     total = 0
-    for (a,b,do,don) in matches:
+    for (a,b,do,dont) in matches:
         if a and b and enabled: total += int(a)*int(b)
         if do: enabled = True
-        if don: enabled = False
+        if dont: enabled = False
     return total
-
 
 print("p1 sample (161):", part1(p1_sample))
 print("p1:", part1(input_text))
