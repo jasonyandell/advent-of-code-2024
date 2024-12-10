@@ -46,6 +46,7 @@ def part2(mapx):
     gaps = []
     current_group = []
 
+    # [1,2,7,8] -> [[1,2], [7,8]]
     for i in all_gaps:
         if current_group and i != current_group[-1] + 1:
             gaps.append(current_group)
@@ -55,28 +56,18 @@ def part2(mapx):
     if current_group:
         gaps.append(current_group)
 
-    # id by id down
+    # id by id down.  look at each gap.  if the file can fit, swap it in
     for id in range(last_id, 0, -1):
-        # foreach gap 
+        needed_files = files_by_id[id]
+        needed_count = len(needed_files)
         for gap in gaps:
-            # if file can fit (len(diles_by_id[id]))
-            if len(files_by_id[id])<=len(gap):
-                # swap it in, index in files_by_id[id]
-                files_indexes = files_by_id[id]
-                for i in range(len(files_indexes)):
-                    gap_index = gap[i]
-                    file_index = files_indexes[i]
-                    if file_index < gap_index: 
-                        continue # don't look at leftward-moves
-                    disk[gap_index], disk[file_index] = disk[file_index], disk[gap_index]
-                gap[:] = gap[len(files_indexes)::]
+            if needed_count <= len(gap):
+                for gap_index, file_index in zip(gap, needed_files):
+                    # Only swap if file_index is not to the left (no leftward moves)
+                    if file_index >= gap_index:
+                        disk[gap_index], disk[file_index] = disk[file_index], disk[gap_index]
+                gap[:] = gap[needed_count:]
                 break
-
-        # output = ""
-        # for value in disk:
-        #     if not value: output += "."
-        #     else: output += str(value[0] % 10)
-        #print(id, output)
 
     checksum = sum(i * value[0] for i, value in enumerate(disk) if value)
 
