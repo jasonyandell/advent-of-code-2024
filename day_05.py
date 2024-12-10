@@ -1,6 +1,7 @@
 from aoc import read_lines
 import re
 from collections import defaultdict
+from functools import cmp_to_key
 
 sample=read_lines("data/05-sample.txt")
 input_text=read_lines("data/05.txt")
@@ -40,8 +41,9 @@ def find_correct_and_incorrect_updates(lines):
         if good: 
             correct.append(update)
         else:
-            incorrect.append(update)
-            
+            corrected = sorted(update, key=cmp_to_key(lambda a,b: ((a,b) in rules)*2-1))
+            incorrect.append(corrected)
+
     return (correct, incorrect)
 
 def part1(lines):
@@ -49,5 +51,14 @@ def part1(lines):
     middle_sum = sum([update[int(len(update)/2)] for update in correct])
     return middle_sum
 
+def part2(lines):
+    _, incorrect = find_correct_and_incorrect_updates(lines)
+
+    middle_sum = sum([update[int(len(update)/2)] for update in incorrect])
+    return middle_sum
+
+
 print("p1 sample (143):", part1(sample))
 print("p1 (5268):", part1(input_text))
+print("p2 sample (123):", part2(sample))
+print("p2:", part2(input_text))
