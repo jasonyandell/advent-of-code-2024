@@ -28,12 +28,10 @@ def find_trails(grid):
             if int(grid[r][c]) - int(grid[row][col]) == 1: # climbing exactly 1 higher
                 horizon.append(((r,c), path + [curr], visited | {curr}))
 
-
 def starts_and_trails(grid):
     starts = [(row_idx, col_idx) for row_idx, row in enumerate(grid) for col_idx, value in enumerate(row) if value == "0"]
     trails = [trail for trail in find_trails(grid)] # copy
     return starts, trails
-
 
 def part1(grid):
     starts, trails = starts_and_trails(grid)
