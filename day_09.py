@@ -41,24 +41,22 @@ def part2(mapx):
         if value:
             files_by_id[value[0]].append(index)
 
+    #   find gaps 
+    all_gaps = [index for index, value in enumerate(disk) if value == []]
+    gaps = []
+    current_group = []
+
+    for i in all_gaps:
+        if current_group and i != current_group[-1] + 1:
+            gaps.append(current_group)
+            current_group = []
+        current_group.append(i)
+
+    if current_group:
+        gaps.append(current_group)
+
     # id by id down
     for id in range(last_id, 0, -1):
-        print(id)
-        #   find gaps 
-        all_gaps = [index for index, value in enumerate(disk) if value == []]
-        gaps=[]
-        gap = []
-        gaps.append(gap)
-        for index in all_gaps:
-            if not gap:
-                gap.append(index) # collect 
-                continue
-            if index == gap[-1]+1: 
-                gap.append(index)
-            else: 
-                gap = [index]
-                gaps.append(gap)
-
         # foreach gap 
         for gap in gaps:
             # if file can fit (len(diles_by_id[id]))
@@ -71,6 +69,7 @@ def part2(mapx):
                     if file_index < gap_index: 
                         continue # don't look at leftward-moves
                     disk[gap_index], disk[file_index] = disk[file_index], disk[gap_index]
+                gap[:] = gap[len(files_indexes)::]
                 break
 
         # output = ""
