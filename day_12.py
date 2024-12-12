@@ -27,6 +27,7 @@ def find_vertical_walls(direction_func, group, row_bounds, col_bounds):
             p = (row, col)
             if p in group and direction_func(p) not in group:
                 wall_positions.append(row)
+        # walls at positions [1,2,5,7] = walls at [1,2], [5], [7] = 3 walls
         total += count_consecutive(wall_positions)
     return total
 
@@ -42,7 +43,6 @@ def find_horizontal_walls(direction_func, group, row_bounds, col_bounds):
     return total
 
 def walls(group):
-    # collect all the wall segments
     row_bounds = (min(g[0] for g in group), max(g[0] for g in group) + 1)
     col_bounds = (min(g[1] for g in group), max(g[1] for g in group) + 1)
 
@@ -52,8 +52,11 @@ def walls(group):
     down = lambda pos: (pos[0]+1, pos[1])
 
     walls = 0
+    # go down.  if you don't find anything at left or right, it's a wall
     walls += find_vertical_walls(left, group, row_bounds, col_bounds)
     walls += find_vertical_walls(right, group, row_bounds, col_bounds)
+
+    # go across.  if you don't find anything up or down, it's a wall
     walls += find_horizontal_walls(up, group, row_bounds, col_bounds)
     walls += find_horizontal_walls(down, group, row_bounds, col_bounds)
 
@@ -107,7 +110,7 @@ def part2(grid):
 
     total = 0
     for (r,c), (g, p) in groups_with_walls.items():
-        print(grid[r][c], len(g), p, g)
+        #print(grid[r][c], len(g), p, g)
         total += len(g)*p
     return total
 
