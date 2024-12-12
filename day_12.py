@@ -9,6 +9,56 @@ def get_neighbors(pos):
     row, col = pos
     return {(row+r, col+c) for (r,c) in dirs}
 
+def count_consecutive(xs):
+    count = 0
+    previous = None
+    for num in xs:
+        if previous is None or num != previous + 1:
+            # If this is the first element or if there's a break in consecutive sequence
+            count += 1
+        previous = num
+    return count
+
+def find_vertical_walls(direction_func, group, row_bounds, col_bounds):
+    total = 0
+    for col in range(*col_bounds):
+        wall_positions = []
+        for row in range(*row_bounds):
+            p = (row, col)
+            if p in group and direction_func(p) not in group:
+                wall_positions.append(row)
+        total += count_consecutive(wall_positions)
+    return total
+
+def find_horizontal_walls(direction_func, group, row_bounds, col_bounds):
+    total = 0
+    for row in range(*row_bounds):
+        wall_positions = []
+        for col in range(*col_bounds):
+            p = (row, col)
+            if p in group and direction_func(p) not in group:
+                wall_positions.append(col)
+        total += count_consecutive(wall_positions)
+    return total
+
+def walls(group):
+    # collect all the wall segments
+    row_bounds = (min(g[0] for g in group), max(g[0] for g in group) + 1)
+    col_bounds = (min(g[1] for g in group), max(g[1] for g in group) + 1)
+
+    left = lambda pos: (pos[0], pos[1]-1)
+    right = lambda pos: (pos[0], pos[1]+1)
+    up = lambda pos: (pos[0]-1, pos[1])
+    down = lambda pos: (pos[0]+1, pos[1])
+
+    walls = 0
+    walls += find_vertical_walls(left, group, row_bounds, col_bounds)
+    walls += find_vertical_walls(right, group, row_bounds, col_bounds)
+    walls += find_horizontal_walls(up, group, row_bounds, col_bounds)
+    walls += find_horizontal_walls(down, group, row_bounds, col_bounds)
+
+    return walls
+
 def perimeter(group):
     # each has a perimeter of 4 - neighbors
     total = 0
@@ -51,5 +101,17 @@ def part1(grid):
         total += len(g)*p
     return total
 
+def part2(grid):
+    groups = flood(grid)    
+    groups_with_walls = defaultdict() | {start: (g, walls(g)) for (start, g) in groups.items()}
+
+    total = 0
+    for (r,c), (g, p) in groups_with_walls.items():
+        print(grid[r][c], len(g), p, g)
+        total += len(g)*p
+    return total
+
 print("p1 sample (1930)", part1(sample))
 print("p1", part1(input_text))
+print("p2 sample (1206)", part2(sample))
+print("p2", part2(input_text))
